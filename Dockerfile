@@ -20,10 +20,13 @@ RUN set -ex; \
 	apt-get install -y --no-install-recommends \
 		libjpeg-dev \
 		libpng-dev \
+		libxml2-dev \
+		libxslt1-dev \
 	; \
 	\
 	docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
-	docker-php-ext-install gd mysqli opcache zip; \
+	docker-php-ext-install gd mysqli opcache zip bcmath calendar pcntl pdo_mysql soap wddx xsl; \
+	docker-php-ext-enable gd mysqli opcache zip bcmath calendar pcntl pdo_mysql soap wddx xsl; \
 	\
 	# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	apt-mark auto '.*' > /dev/null; \
