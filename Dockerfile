@@ -1,4 +1,4 @@
-FROM php:7.2-fpm
+FROM php:5.6-fpm
 # Don't for get to update zend_extension and extension_dir in php.ini when
 # updating php verions. The easiest way to update is to pull the same php
 # version being used in the official wordpress docker image
@@ -49,9 +49,9 @@ RUN apt-get update -y \
 	&& apt-get install wget -y \
 	&& apt-get install curl -y
 
-RUN cd /tmp && wget http://xdebug.org/files/xdebug-2.6.1.tgz \
-	&& tar -zxvf xdebug-2.6.1.tgz \
-	&& cd xdebug-2.6.1 && phpize \
+RUN cd /tmp && wget http://xdebug.org/files/xdebug-2.5.5.tgz \
+	&& tar -zxvf xdebug-2.5.5.tgz \
+	&& cd xdebug-2.5.5 && phpize \
 	&& ./configure --enable-xdebug && make && make install
 
 # Copy xdebug configration for remote debugging
