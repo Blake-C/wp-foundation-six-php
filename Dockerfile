@@ -1,4 +1,4 @@
-FROM php:7.2-fpm
+FROM php:7.3-fpm
 # Don't for get to update zend_extension and extension_dir in php.ini when
 # updating php verions. The easiest way to update is to pull the same php
 # version being used in the official wordpress docker image
@@ -18,11 +18,12 @@ RUN set -ex; \
 	\
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		libjpeg-dev \
-		libpng-dev \
-		libxml2-dev \
-		libxslt1-dev \
-		libldap2-dev \
+	libjpeg-dev \
+	libpng-dev \
+	libzip-dev \
+	libxml2-dev \
+	libxslt1-dev \
+	libldap2-dev \
 	; \
 	\
 	docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
@@ -34,12 +35,12 @@ RUN set -ex; \
 	apt-mark auto '.*' > /dev/null; \
 	apt-mark manual $savedAptMark; \
 	ldd "$(php -r 'echo ini_get("extension_dir");')"/*.so \
-		| awk '/=>/ { print $3 }' \
-		| sort -u \
-		| xargs -r dpkg-query -S \
-		| cut -d: -f1 \
-		| sort -u \
-		| xargs -rt apt-mark manual; \
+	| awk '/=>/ { print $3 }' \
+	| sort -u \
+	| xargs -r dpkg-query -S \
+	| cut -d: -f1 \
+	| sort -u \
+	| xargs -rt apt-mark manual; \
 	\
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	rm -rf /var/lib/apt/lists/*
@@ -49,9 +50,9 @@ RUN apt-get update -y \
 	&& apt-get install wget -y \
 	&& apt-get install curl -y
 
-RUN cd /tmp && wget http://xdebug.org/files/xdebug-2.6.1.tgz \
-	&& tar -zxvf xdebug-2.6.1.tgz \
-	&& cd xdebug-2.6.1 && phpize \
+RUN cd /tmp && wget http://xdebug.org/files/xdebug-2.7.0.tgz \
+	&& tar -zxvf xdebug-2.7.0.tgz \
+	&& cd xdebug-2.7.0 && phpize \
 	&& ./configure --enable-xdebug && make && make install
 
 # Copy xdebug configration for remote debugging
