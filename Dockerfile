@@ -1,4 +1,4 @@
-FROM php:7.3-fpm
+FROM php:7.4.2-fpm
 # Don't for get to update zend_extension and extension_dir in php.ini when
 # updating php verions. The easiest way to update is to pull the same php
 # version being used in the official wordpress docker image
@@ -11,14 +11,25 @@ FROM php:7.3-fpm
 # restart service
 #	docker-composer restart
 
-# install the PHP extensions we need
+# persistent dependencies
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+	# Ghostscript is required for rendering PDF previews
+	ghostscript \
+	; \
+	rm -rf /var/lib/apt/lists/*
+
+# install the PHP extensions we need (https://make.wordpress.org/hosting/handbook/handbook/server-environment/#php-extensions)
 RUN set -ex; \
 	\
 	savedAptMark="$(apt-mark showmanual)"; \
 	\
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
+	libfreetype6-dev \
 	libjpeg-dev \
+	libmagickwand-dev \
 	libpng-dev \
 	libzip-dev \
 	libxml2-dev \
@@ -26,10 +37,24 @@ RUN set -ex; \
 	libldap2-dev \
 	; \
 	\
-	docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
+	docker-php-ext-configure gd --with-freetype --with-jpeg; \
 	docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
-	docker-php-ext-install gd mysqli opcache zip bcmath calendar pcntl pdo_mysql soap wddx xsl ldap; \
-	docker-php-ext-enable opcache; \
+	docker-php-ext-install -j "$(nproc)" \
+	bcmath \
+	exif \
+	gd \
+	mysqli \
+	opcache \
+	zip \
+	calendar \
+	pcntl \
+	pdo_mysql \
+	soap \
+	xsl \
+	ldap \
+	; \
+	pecl install imagick-3.4.4; \
+	docker-php-ext-enable imagick opcache; \
 	\
 	# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	apt-mark auto '.*' > /dev/null; \
@@ -50,9 +75,9 @@ RUN apt-get update -y \
 	&& apt-get install wget -y \
 	&& apt-get install curl -y
 
-RUN cd /tmp && wget http://xdebug.org/files/xdebug-2.7.0.tgz \
-	&& tar -zxvf xdebug-2.7.0.tgz \
-	&& cd xdebug-2.7.0 && phpize \
+RUN cd /tmp && wget http://xdebug.org/files/xdebug-2.9.1.tgz \
+	&& tar -zxvf xdebug-2.9.1.tgz \
+	&& cd xdebug-2.9.1 && phpize \
 	&& ./configure --enable-xdebug && make && make install
 
 # Copy xdebug configration for remote debugging
