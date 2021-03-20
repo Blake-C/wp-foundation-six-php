@@ -1,4 +1,4 @@
-FROM php:7.4.6-fpm
+FROM php:8.0-fpm
 # Don't for get to update zend_extension and extension_dir in php.ini when
 # updating php verions. The easiest way to update is to pull the same php
 # version being used in the official wordpress docker image
@@ -39,6 +39,10 @@ RUN set -ex; \
 	\
 	docker-php-ext-configure gd --with-freetype --with-jpeg; \
 	docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
+	docker-php-ext-configure gd \
+	--with-freetype \
+	--with-jpeg \
+	; \
 	docker-php-ext-install -j "$(nproc)" \
 	bcmath \
 	exif \
@@ -53,8 +57,10 @@ RUN set -ex; \
 	xsl \
 	ldap \
 	; \
-	pecl install imagick-3.4.4; \
-	docker-php-ext-enable imagick opcache; \
+	# https://github.com/Imagick/imagick/issues/331
+	# pecl install imagick-3.4.4; \
+	# docker-php-ext-enable imagick opcache; \
+	docker-php-ext-enable opcache; \
 	\
 	# reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	apt-mark auto '.*' > /dev/null; \
@@ -75,9 +81,9 @@ RUN apt-get update -y \
 	&& apt-get install wget -y \
 	&& apt-get install curl -y
 
-RUN cd /tmp && wget http://xdebug.org/files/xdebug-2.9.6.tgz \
-	&& tar -zxvf xdebug-2.9.6.tgz \
-	&& cd xdebug-2.9.6 && phpize \
+RUN cd /tmp && wget http://xdebug.org/files/xdebug-3.0.3.tgz \
+	&& tar -zxvf xdebug-3.0.3.tgz \
+	&& cd xdebug-3.0.3 && phpize \
 	&& ./configure --enable-xdebug && make && make install
 
 # Copy xdebug configration for remote debugging
