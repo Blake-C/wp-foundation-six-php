@@ -1,4 +1,7 @@
 FROM php:8.0-fpm
+
+# 8.0.3-fpm-alpine3.12
+
 # Don't for get to update zend_extension and extension_dir in php.ini when
 # updating php verions. The easiest way to update is to pull the same php
 # version being used in the official wordpress docker image
@@ -89,4 +92,4 @@ RUN cd /tmp && wget http://xdebug.org/files/xdebug-3.0.3.tgz \
 # Copy xdebug configration for remote debugging
 COPY ./php.ini /usr/local/etc/php/php.ini
 
-WORKDIR /var/www/public_html
+WORKDIR /home/webdev/www/public_html
