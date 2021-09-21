@@ -1,6 +1,4 @@
-FROM php:8.0-fpm
-
-# 8.0.3-fpm-alpine3.12
+FROM php:8.0.10-fpm
 
 # Don't for get to update zend_extension and extension_dir in php.ini when
 # updating php verions. The easiest way to update is to pull the same php
