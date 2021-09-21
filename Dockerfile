@@ -59,7 +59,7 @@ RUN set -ex; \
 	soap \
 	xsl \
 	ldap \
-    intl \
+	intl \
 	; \
 	# https://github.com/Imagick/imagick/issues/331
 	# pecl install imagick-3.4.4; \
